@@ -1,0 +1,138 @@
+{
+  "createShapes": [
+    "shapes: [{id:\"shape:id\", type:\"geo\", x:0, y:0, props:{w:200,h:100}, text:\"Texto\"}]"
+  ],
+  "updateShapes": [
+    "partials: [{id,type,x?,y?,props?,text?}]"
+  ],
+  "deleteShapes": [
+    "shapeIds"
+  ],
+  "duplicateShapes": [
+    "shapeIds",
+    "offset?: {x,y}"
+  ],
+  "groupShapes": [
+    "shapeIds",
+    "options?: {groupId}"
+  ],
+  "ungroupShapes": [
+    "shapeIds"
+  ],
+  "alignShapes": [
+    "shapeIds",
+    "left|center-horizontal|right|top|center-vertical|bottom"
+  ],
+  "distributeShapes": [
+    "shapeIds",
+    "horizontal|vertical"
+  ],
+  "stackShapes": [
+    "shapeIds",
+    "horizontal|vertical",
+    "gap?"
+  ],
+  "packShapes": [
+    "shapeIds",
+    "gap?"
+  ],
+  "rotateShapesBy": [
+    "shapeIds",
+    "radians"
+  ],
+  "resizeShape": [
+    "shapeId",
+    "scale:{x,y}"
+  ],
+  "flipShapes": [
+    "shapeIds",
+    "horizontal|vertical"
+  ],
+  "reparentShapes": [
+    "shapeIds",
+    "parentId"
+  ],
+  "createBindings": [
+    "bindings:[{id,type,fromId,toId,props}]"
+  ],
+  "updateBindings": [
+    "bindingPartials"
+  ],
+  "deleteBindings": [
+    "bindingIds"
+  ],
+  "createAssets": [
+    "assets"
+  ],
+  "updateAssets": [
+    "assetPartials"
+  ],
+  "deleteAssets": [
+    "assetIds"
+  ],
+  "createPage": [
+    "{id:\"page:id\",name}"
+  ],
+  "updatePage": [
+    "{id,name?,index?,meta?}"
+  ],
+  "deletePage": [
+    "pageId"
+  ],
+  "duplicatePage": [
+    "pageId",
+    "newPageId?"
+  ],
+  "setCurrentPage": [
+    "pageId"
+  ],
+  "setCamera": [
+    "{x,y,z}"
+  ],
+  "zoomToFit": [],
+  "zoomToSelection": [],
+  "zoomToBounds": [
+    "{x,y,w,h}",
+    "options?"
+  ],
+  "setSelectedShapes": [
+    "shapeIds"
+  ],
+  "selectAll": [],
+  "selectNone": [],
+  "setCurrentTool": [
+    "toolId"
+  ],
+  "updateInstanceState": [
+    "{isReadonly?,isGridMode?,isFocusMode?,isDebugMode?}"
+  ],
+  "updateDocumentSettings": [
+    "{name?,meta?}"
+  ],
+  "undo": [],
+  "redo": [],
+  "snapshot": [],
+  "loadSnapshot": [
+    "snapshot"
+  ],
+  "export": [
+    "shapeIds?",
+    "{format:svg|png|jpeg|webp,scale?:1..4,background?:boolean}"
+  ],
+  "batch": [
+    "[{comando,args}]"
+  ],
+  "bringToFront": [
+    "shapeIds"
+  ],
+  "sendToBack": [
+    "shapeIds"
+  ],
+  "bringForward": [
+    "shapeIds"
+  ],
+  "sendBackward": [
+    "shapeIds"
+  ],
+  "save": []
+}

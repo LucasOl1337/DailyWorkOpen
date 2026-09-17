@@ -1,0 +1,53 @@
+# Dependencies and generated output.
+**/node_modules/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+**/dist/
+**/dist-electron/
+**/dist-ssr/
+**/build/
+**/.vite/
+**/.wrangler/
+**/.cache/
+**/.tmp/
+**/.temp/
+**/tmp/
+**/coverage/
+**/.eslintcache
+
+# Local environment and secrets.
+.env
+.env.*
+!.env.example
+.dev.vars
+*.local
+*.local.md
+
+# OS and logs.
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.temp
+
+# App runtime (personal days, boards, captures, credentials).
+Daily Work app/release/
+Daily Work app/out/
+Daily Work app/artifacts/
+Daily Work app/data/**
+!Daily Work app/data/.gitkeep
+!Daily Work app/data/agente-config.example.json
+Daily Work app/sessoes/**
+!Daily Work app/sessoes/.gitkeep
+Daily Work app/assets/portfolio/**
+!Daily Work app/assets/portfolio/.gitkeep
+!Daily Work app/assets/LEIA-ME.txt
+
+# Personal workspace runtime.
+LucasOL/Private/**
+!LucasOL/Private/README.md
+!LucasOL/Private/.gitignore
+LucasOL/Portfolio/privacidade/*.local.md
+*.wav

@@ -1,0 +1,6 @@
+Coloque sua foto nesta pasta com o nome:
+
+  eu.png   (ou eu.jpg, eu.jpeg, eu.webp)
+
+O bloco "pessoa" da página Principal usa esse arquivo automaticamente,
+sem precisar rebuildar o app — basta recarregar a janela.

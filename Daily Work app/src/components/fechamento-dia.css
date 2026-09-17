@@ -1,0 +1,146 @@
+.fechamento-dia {
+  margin: 22px 0 0;
+  color: #f6f7f8;
+  border-radius: 18px;
+  background: #1c2731;
+  box-shadow: 0 14px 34px rgba(15, 24, 32, .18);
+  overflow: hidden;
+}
+
+.fechamento-chamada {
+  width: 100%;
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 15px 19px;
+  color: inherit;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.fechamento-chamada > span:first-child { display: grid; gap: 4px; }
+.fechamento-chamada small,
+.fechamento-conteudo header > span {
+  color: #9eb4a9;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.fechamento-chamada > span:last-child { color: #b9d8c8; font-size: 12px; font-weight: 800; }
+
+.fechamento-conteudo {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border-top: 1px solid #34424c;
+  background: #222f39;
+}
+
+.fechamento-conteudo p,
+.fechamento-conteudo h3 { margin: 0; }
+
+.fechamento-metricas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.fechamento-metricas span {
+  display: grid;
+  gap: 3px;
+  padding: 13px;
+  color: #b9c7cf;
+  font-size: 11px;
+  border: 1px solid #3a4b56;
+  border-radius: 12px;
+  background: #293842;
+}
+.fechamento-metricas strong { color: #fff; font-size: 21px; }
+.fechamento-metricas .fechamento-metrica--alerta { border-color: #8a5a45; background: #3a302d; }
+
+.fechamento-semana {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid #3a4b56;
+  border-radius: 12px;
+  background: #3a4b56;
+  overflow: hidden;
+}
+.fechamento-semana > div { display: grid; gap: 4px; min-width: 0; padding: 12px; background: #25333d; }
+.fechamento-semana span { color: #9eb4a9; font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.fechamento-semana strong { font-size: 11px; overflow-wrap: anywhere; }
+
+.fechamento-alerta {
+  padding: 11px 13px;
+  color: #f4d4a7;
+  font-size: 12px;
+  line-height: 1.4;
+  border-radius: 10px;
+  background: #443b2d;
+}
+.fechamento-alerta--erro { color: #ffc3bd; background: #4b2c2d; }
+.fechamento-alerta--ok { color: #bfe8d3; background: #244337; }
+
+.fechamento-handoffs,
+.fechamento-destinos { display: grid; gap: 10px; }
+.fechamento-conteudo header { display: grid; gap: 3px; }
+.fechamento-conteudo h3 { font-size: 15px; }
+.fechamento-handoffs > div,
+.fechamento-destinos > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.fechamento-handoffs article,
+.fechamento-destinos label {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #3a4b56;
+  border-radius: 11px;
+  background: #293842;
+}
+.fechamento-handoffs article { display: grid; gap: 5px; }
+.fechamento-handoffs strong,
+.fechamento-destinos strong { font-size: 12px; overflow-wrap: anywhere; }
+.fechamento-handoffs p,
+.fechamento-destinos small { color: #b4c2ca; font-size: 11px; line-height: 1.4; }
+
+.fechamento-destinos label {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 9px;
+  cursor: pointer;
+}
+.fechamento-destinos input { margin-top: 2px; accent-color: #75c59d; }
+.fechamento-destinos label > span { display: grid; gap: 3px; }
+.fechamento-destino--vazio { opacity: .42; cursor: not-allowed !important; }
+
+.fechamento-conteudo > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 3px;
+  color: #aabac2;
+  font-size: 11px;
+}
+.fechamento-conteudo > footer button {
+  min-height: 40px;
+  padding: 0 16px;
+  color: #15231c;
+  font-weight: 800;
+  border: 0;
+  border-radius: 10px;
+  background: #8ed3af;
+  cursor: pointer;
+}
+.fechamento-conteudo > footer button:disabled { opacity: .45; cursor: not-allowed; }
+
+@media (max-width: 760px) {
+  .fechamento-semana { grid-template-columns: 1fr; }
+  .fechamento-handoffs > div,
+  .fechamento-destinos > div { grid-template-columns: 1fr; }
+  .fechamento-conteudo > footer { align-items: stretch; flex-direction: column; }
+}

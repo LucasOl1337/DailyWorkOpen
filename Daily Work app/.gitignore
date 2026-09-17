@@ -1,0 +1,40 @@
+node_modules/
+dist/
+dist-electron/
+release/
+out/
+build/
+.vite/
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+coverage/
+data/editorial/.sessoes/
+.cache/
+.tmp/
+
+# Perfis temporarios usados apenas para capturas Electron/Chromium.
+# As imagens finais em artifacts/ continuam versionaveis.
+artifacts/**/capture-profile-*/
+
+# Historical Sumário conversation dumps. Commit only the current day's file:
+# git add -f data/sumarios/AAAA-MM-DD/conversas.json
+# After merge/checkout, restore any locally deleted dumps from the previous
+# revision onto the working tree and leave them untracked.
+data/sumarios/**/conversas.json
+
+# Evidências intermediárias do desenvolvimento; os PNGs `sumario-diario-final-*` ficam versionáveis.
+artifacts/sumario-1200x800.png
+artifacts/sumario-900x700.png
+artifacts/sumario-analisado-1200x800.png
+artifacts/sumario-chat-1200x800.png
+artifacts/sumario-chat-900x700.png
+
+data/.agenda-dev/
+data/agenda/
+data/principal-canvas.json
+data/principal-canvas.json.bak

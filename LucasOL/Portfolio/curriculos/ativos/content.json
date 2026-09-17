@@ -1,0 +1,30 @@
+{
+  "status": "template",
+  "name": "Your Name",
+  "contact": {
+    "location": { "pt": "Cidade, País", "en": "City, Country" },
+    "site": "https://site.example",
+    "github": "https://github.com/example",
+    "linkedin": "https://www.linkedin.com/in/your-linkedin"
+  },
+  "pt": {
+    "roles": {
+      "software-engineer": "Software Engineer",
+      "ai-engineer": "AI Engineer"
+    },
+    "summaries": {
+      "software-engineer": "Replace with a one-paragraph summary of your software work.",
+      "ai-engineer": "Replace with a one-paragraph summary of your AI work."
+    }
+  },
+  "en": {
+    "roles": {
+      "software-engineer": "Software Engineer",
+      "ai-engineer": "AI Engineer"
+    },
+    "summaries": {
+      "software-engineer": "Replace with a one-paragraph summary of your software work.",
+      "ai-engineer": "Replace with a one-paragraph summary of your AI work."
+    }
+  }
+}

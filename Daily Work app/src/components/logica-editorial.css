@@ -1,0 +1,76 @@
+.logica-page {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 20px 24px 48px;
+  color: #1e2927;
+  background: #eef2f1;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.logica-page *, .logica-page *::before, .logica-page *::after { box-sizing: border-box; }
+.logica-inner { width: min(1180px, 100%); min-width: 0; margin: 0 auto; display: grid; gap: 18px; }
+
+.logica-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.logica-eyebrow { margin: 0 0 5px; color: #72817c; font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+.logica-header h1 { margin: 0; color: #17231f; font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -.04em; }
+.logica-lede { max-width: 640px; margin: 9px 0 0; color: #61706a; font-size: 14px; line-height: 1.5; }
+.logica-acoes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.logica-botao { padding: 9px 15px; border: 1px solid #cfdbd7; border-radius: 11px; color: #254139; background: #fff; font-size: 12px; font-weight: 700; cursor: pointer; }
+.logica-botao:hover:not(:disabled) { border-color: #9abaae; }
+.logica-botao:disabled { cursor: not-allowed; opacity: .55; }
+.logica-botao--primario { border-color: #277158; background: #277158; color: #fff; }
+.logica-botao--primario:hover:not(:disabled) { background: #1c5d47; }
+
+.logica-erro, .logica-aviso, .logica-vazio { margin: 0; padding: 10px 14px; border-radius: 12px; font-size: 13px; }
+.logica-erro { border: 1px solid #e5b7b2; color: #8c2f24; background: #fdf0ee; }
+.logica-aviso { border: 1px solid #bcd9c9; color: #17614f; background: #eef7f1; }
+.logica-vazio { color: #7a8983; text-align: center; }
+
+.logica-grade { min-width: 0; display: grid; grid-template-columns: minmax(0, 7fr) minmax(300px, 5fr); gap: 18px; align-items: start; }
+.logica-coluna { min-width: 0; display: grid; gap: 16px; }
+
+.logica-secao, .logica-preview { min-width: 0; box-sizing: border-box; border: 1px solid #d8e1de; border-radius: 20px; padding: 20px; background: rgba(255,255,255,.78); box-shadow: 0 12px 35px rgba(48,67,61,.06); }
+.logica-preview { position: sticky; top: 0; }
+.logica-secao-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid #e6ecea; margin-bottom: 16px; }
+.logica-secao-heading h2 { margin: 0; color: #17231f; font-size: 19px; letter-spacing: -.02em; }
+.logica-secao-heading p { margin: 6px 0 0; color: #6d7a75; font-size: 12px; line-height: 1.45; }
+.logica-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: #e4f2eb; color: #17614f; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+
+.logica-passos { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.logica-passo { border: 1px solid #dce6e2; border-radius: 14px; background: #fff; overflow: hidden; }
+.logica-passo.is-open { border-color: #9abaae; box-shadow: inset 3px 0 0 #277158; }
+.logica-passo-cab { display: grid; grid-template-columns: 42px 1fr; gap: 10px; align-items: center; width: 100%; padding: 12px 14px; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.logica-passo-num { color: #277158; font-size: 13px; font-weight: 800; letter-spacing: .04em; }
+.logica-passo-cab strong { display: block; color: #17231f; font-size: 14px; }
+.logica-passo-cab small { display: block; margin-top: 2px; color: #7a8983; font-size: 11px; line-height: 1.4; }
+.logica-passo-corpo, .logica-campos { display: grid; gap: 12px; padding: 0 14px 14px; }
+.logica-campos { padding: 0; }
+.logica-passo-corpo label, .logica-campos label, .logica-notas { display: grid; gap: 6px; color: #64736d; font-size: 10px; font-weight: 760; letter-spacing: .04em; text-transform: uppercase; }
+.logica-passo-corpo input, .logica-passo-corpo textarea, .logica-campos textarea, .logica-notas textarea {
+  width: 100%;
+  border: 1px solid #d6e0dc;
+  border-radius: 9px;
+  padding: 9px 10px;
+  color: #1d2d28;
+  background: #fbfcfb;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.logica-passo-corpo textarea, .logica-campos textarea, .logica-notas textarea { resize: vertical; min-height: 84px; }
+
+.logica-preview-abas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.logica-preview-abas button { padding: 7px 10px; border: 1px solid #cfdbd7; border-radius: 9px; background: #fff; color: #4c5c56; font-size: 11px; font-weight: 750; cursor: pointer; }
+.logica-preview-abas button.is-active { border-color: #277158; background: #277158; color: #fff; }
+.logica-preview-texto { margin: 0; max-height: 52vh; overflow: auto; padding: 12px 13px; border-radius: 12px; background: #17231f; color: #d7e6df; font-size: 12px; line-height: 1.55; white-space: pre-wrap; }
+.logica-preview-meta { margin: 12px 0 0; color: #7a8983; font-size: 11px; line-height: 1.45; }
+
+@media (max-width: 980px) {
+  .logica-header { flex-direction: column; }
+  .logica-grade { grid-template-columns: 1fr; }
+  .logica-preview { position: static; }
+}

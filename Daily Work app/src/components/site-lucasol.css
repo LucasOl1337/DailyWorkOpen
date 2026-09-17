@@ -1,0 +1,412 @@
+.site-lucasol {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 52px minmax(0, 1fr);
+  overflow: hidden;
+  color: #d8e2df;
+  background: #171a1b;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.site-lucasol-toolbar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 0 16px;
+  background: #202425;
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.15);
+}
+
+.site-lucasol-identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+}
+
+.site-lucasol-mark {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  place-items: center;
+  border-radius: 7px;
+  color: #fff;
+  background: #4d7fe8;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+}
+
+.site-lucasol-identity > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.site-lucasol-identity strong {
+  color: #f4f7f6;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.site-lucasol-identity small {
+  color: #909b98;
+  font-size: 9px;
+  line-height: 1.1;
+}
+
+.site-lucasol-environment {
+  display: inline-flex;
+  height: 28px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #aeb8b5;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.site-lucasol-environment span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #57c58d;
+  box-shadow: 0 0 0 3px rgba(87, 197, 141, 0.12);
+}
+
+.site-lucasol-environment.is-loading span {
+  background: #e2ae62;
+  box-shadow: 0 0 0 3px rgba(226, 174, 98, 0.12);
+}
+
+.site-lucasol-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: auto;
+}
+
+.site-lucasol-actions button {
+  display: inline-flex;
+  height: 34px;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 10px;
+  color: #bdc7c4;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.site-lucasol-actions button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.site-lucasol-actions button:focus-visible {
+  outline: 2px solid #81a9ff;
+  outline-offset: 2px;
+}
+
+.site-lucasol-actions svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.site-lucasol-frame {
+  position: relative;
+  min-height: 0;
+  background: #191b1d;
+}
+
+.site-lucasol-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #191b1d;
+}
+
+.site-lucasol-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  color: #aeb8b5;
+  background: #191b1d;
+  font-size: 12px;
+}
+
+.site-lucasol-loading span {
+  width: 23px;
+  height: 23px;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-top-color: #6f9cff;
+  border-radius: 50%;
+  animation: site-lucasol-spin 700ms linear infinite;
+}
+
+.site-integration-panel {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: 3;
+  width: min(370px, calc(100vw - 24px));
+  overflow-y: auto;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  color: #dce4e2;
+  background: rgba(25, 29, 30, 0.98);
+  box-shadow: -16px 0 42px rgba(0, 0, 0, 0.3);
+}
+
+.site-integration-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.site-integration-panel > header small {
+  color: #7f8c88;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.site-integration-panel h2,
+.site-integration-panel h3,
+.site-integration-panel p {
+  margin: 0;
+}
+
+.site-integration-panel h2 {
+  margin-top: 3px;
+  color: #f5f8f7;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+
+.site-integration-panel > header button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  color: #9aa6a2;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.site-integration-panel > header button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.site-integration-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 11px;
+  padding: 11px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.site-integration-status > span {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.site-integration-status > span.is-online { background: #57c58d; }
+.site-integration-status > span.is-pending { background: #e2ae62; }
+
+.site-integration-status div {
+  display: grid;
+  gap: 2px;
+}
+
+.site-integration-status strong { font-size: 12px; }
+.site-integration-status small { max-width: 280px; color: #9aa6a2; font-size: 10px; line-height: 1.4; }
+
+.site-integration-section {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 11px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.site-integration-section h3 {
+  color: #f0f4f3;
+  font-size: 12px;
+}
+
+.site-integration-section > p,
+.site-integration-confirm p {
+  color: #9aa6a2;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.site-integration-section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.site-integration-section-heading span {
+  color: #7e8a87;
+  font-size: 9px;
+}
+
+.site-integration-section input {
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  padding: 0 10px;
+  color: #fff;
+  background: #141718;
+  outline: none;
+  font: inherit;
+  font-size: 11px;
+}
+
+.site-integration-section input:focus {
+  border-color: #719cf5;
+  box-shadow: 0 0 0 3px rgba(113, 156, 245, 0.14);
+}
+
+.site-integration-primary,
+.site-integration-confirm > button:last-child {
+  min-height: 36px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 11px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10.5px;
+  font-weight: 720;
+}
+
+.site-integration-primary {
+  color: #fff;
+  background: #4d7fe8;
+}
+
+.site-integration-primary:hover:not(:disabled) { background: #5b8cf1; }
+.site-integration-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.site-integration-section dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.site-integration-section dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 10px;
+}
+
+.site-integration-section dt { color: #87938f; }
+.site-integration-section dd { margin: 0; color: #dce4e2; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+
+.site-integration-confirm {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
+}
+
+.site-integration-confirm > button:last-child {
+  color: #abb6b2;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.site-integration-message {
+  margin-top: 10px !important;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.site-integration-message.is-error { color: #ffc4bd; background: rgba(177, 66, 54, 0.22); }
+.site-integration-message.is-success { color: #bdebd1; background: rgba(45, 135, 85, 0.2); }
+.site-integration-up-to-date { color: #91d6ae !important; }
+
+.site-integration-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.site-integration-metric strong {
+  color: #f3f7f6;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.site-integration-metric span { color: #87938f; font-size: 10px; }
+
+@keyframes site-lucasol-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 700px) {
+  .site-lucasol-toolbar {
+    gap: 9px;
+    padding-inline: 10px;
+  }
+
+  .site-lucasol-actions button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .site-lucasol-actions button {
+    width: 32px;
+    justify-content: center;
+    padding: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-lucasol-loading span { animation-duration: 1.4s; }
+}

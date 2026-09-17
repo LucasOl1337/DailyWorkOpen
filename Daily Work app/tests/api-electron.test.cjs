@@ -1,0 +1,76 @@
+// DAILYWORK_E2E=1 xvfb-run -a node --test tests/api-electron.test.cjs
+const {test}=require('node:test')
+const assert=require('node:assert/strict')
+const fs=require('node:fs'),os=require('node:os'),path=require('node:path')
+const {_electron}=require('playwright-core')
+const root=path.resolve(__dirname,'..')
+const esperar=ms=>new Promise(r=>setTimeout(r,ms))
+test('Electron real: API, tldraw, conflitos, exportação e persistência', {skip:process.env.DAILYWORK_E2E!=='1',timeout:120000}, async t=>{
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'dailywork-api-e2e-')), userData=path.join(tmp,'userData'),data=path.join(tmp,'data')
+ fs.mkdirSync(data,{recursive:true})
+ fs.writeFileSync(path.join(data,'canonico.md'),'---\nid: canonico\ntipo: nota\ntitulo: Fonte canônica\nstatus: pendente\nx: 0\ny: 0\nw: 260\nh: 120\n---\nConteúdo persistido no Markdown.')
+ const env={...process.env,DAILYWORK_USER_DATA_DIR:userData,DAILYWORK_DATA_DIR:data,DAILYWORK_SESSOES_DIR:path.join(tmp,'sessoes'),LUCAS_KNOWLEDGE_DIR:path.join(tmp,'knowledge'),DAILYWORK_CAPTURE_PATH:path.join(tmp,'capture.png'),DAILYWORK_CAPTURE_HOLD:'1',DAILYWORK_CAPTURE_VIEW:'principal',DAILYWORK_API_PORT:'0',DAILYWORK_CAPTURE_DEBUG:'1'}
+ delete env.ELECTRON_RUN_AS_NODE
+ const app=await _electron.launch({executablePath:require('electron'),args:[path.join(root,'electron/main.cjs'),'--no-sandbox','--ozone-platform=x11'],env,timeout:30000})
+ t.after(()=>app.close())
+ const page=await app.firstWindow(), erros=[]; page.on('pageerror',e=>erros.push(e.stack))
+ page.on('requestfailed',req=>console.log('request failed',req.url(),req.failure()?.errorText))
+ const descriptor=path.join(userData,'api-local.json')
+ for(let i=0;!fs.existsSync(descriptor)&&i<100;i++) await esperar(50)
+ const {baseUrl,token}=JSON.parse(fs.readFileSync(descriptor,'utf8'));assert.equal(fs.statSync(descriptor).mode&0o777,0o600)
+ const request=async(rota,body,expected=200)=>{
+  const r=await fetch(baseUrl+rota,{headers:{Authorization:`Bearer ${token}`,...(body===undefined?{}:{'Content-Type':'application/json'})},...(body===undefined?{}:{method:'POST',body:JSON.stringify(body)})})
+  const json=await r.json();assert.equal(r.status,expected,JSON.stringify(json));return json.data??json
+ }
+ for(let i=0;i<200;i++){const r=await fetch(baseUrl+'/api/v1/interface/estado',{headers:{Authorization:`Bearer ${token}`}});if(r.ok)break;await esperar(25)}
+ const op=(nome,args=[],expected)=>request(`/api/v1/operacoes/${nome.replace(':','/')}`,{args},expected)
+ const nav=view=>request('/api/v1/interface/navegar',{view})
+ const state=alvo=>request(`/api/v1/canvas/estado?alvo=${encodeURIComponent(alvo)}`)
+ let alvo='sessao:teste-api'
+ const cmd=async(comando,args=[],expected=200)=>{const{revisao}=await state(alvo);return request('/api/v1/canvas/comandos',{alvo,revisao,comando,args},expected)}
+ const caps=await request('/api/v1/capacidades');assert.ok(caps.operacoes.some(o=>o.nome==='site:metricas'))
+ const novo=await op('blocos:criar',[{tipo:'tarefa',titulo:'Teste isolado'},'2026-09-10']);assert.equal((await op('blocos:obter',[novo.id,'2026-09-10'])).titulo,'Teste isolado')
+ await op('sessoes:criar',['teste-api']);await nav(alvo)
+ const inicial=await state(alvo)
+ await cmd('createShapes',[[{id:'shape:a',type:'geo',x:0,y:0,props:{w:240,h:120},text:'Entrada'},{id:'shape:b',type:'geo',x:400,y:0,props:{w:240,h:120},text:'Saída'}]])
+ const escrito=await state(alvo);assert.equal(escrito.formas.length,2);assert.match(escrito.formas[0].texto,/Entrada|Saída/);assert.notEqual(escrito.revisao,inicial.revisao)
+ await request('/api/v1/canvas/comandos',{alvo,revisao:inicial.revisao,comando:'deleteShapes',args:[['shape:a']]},409)
+ await request('/api/v1/canvas/comandos',{alvo:'principal',revisao:escrito.revisao,comando:'deleteShapes',args:[['shape:a']]},409)
+ await cmd('batch',[[{comando:'updateShapes',args:[[{id:'shape:a',type:'geo',x:55}]]},{comando:'createShapes',args:[[{id:'shape:invalid',type:'geo',props:{color:'invalid-color'}}]]}]],400)
+ assert.equal((await state(alvo)).formas.find(s=>s.id==='shape:a').x,0)
+ await cmd('groupShapes',[['shape:a','shape:b']]);assert.ok((await state(alvo)).formas.some(s=>s.type==='group'))
+ await cmd('undo');assert.equal((await state(alvo)).formas.length,2)
+ await cmd('redo');assert.equal((await state(alvo)).formas.length,3)
+ await cmd('undo')
+ await cmd('createPage',[{id:'page:outra',name:'Segunda página'}]);await cmd('setCurrentPage',['page:outra'])
+ await cmd('createShapes',[[{id:'shape:nota',type:'note',x:0,y:0,text:'Nota da segunda página'}]])
+ await cmd('setCurrentPage',[inicial.paginaId])
+ await cmd('batch',[[{comando:'createShapes',args:[[{id:'shape:seta',type:'arrow',x:0,y:0,props:{start:{x:240,y:60},end:{x:400,y:60}}}]]},{comando:'createBindings',args:[[{id:'binding:inicio',type:'arrow',fromId:'shape:seta',toId:'shape:a',props:{terminal:'start'}},{id:'binding:fim',type:'arrow',fromId:'shape:seta',toId:'shape:b',props:{terminal:'end'}}]]}]])
+ await cmd('zoomToFit')
+ assert.match((await cmd('export',[['shape:a','shape:b','shape:seta'],{format:'svg'}])).svg,/<svg/)
+ const png=await cmd('export',[['shape:a','shape:b','shape:seta'],{format:'png',scale:1}]);assert.match(png.dataUrl,/^data:image\/png;base64,/)
+ fs.writeFileSync(path.join(tmp,'export.png'),Buffer.from(png.dataUrl.split(',')[1],'base64'))
+ assert.doesNotMatch(await page.locator('body').innerText(),/Something went wrong|Please refresh your browser/)
+ for(const [w,h]of [[1200,800],[900,700]]){
+  const captura=await app.evaluate(async({BrowserWindow},size)=>{const win=BrowserWindow.getAllWindows()[0];win.setContentSize(...size);await new Promise(r=>setTimeout(r,150));return(await win.capturePage()).toPNG().toString('base64')},[w,h])
+  fs.writeFileSync(path.join(tmp,`canvas-${w}x${h}.png`),Buffer.from(captura,'base64'))
+ }
+ await op('sessoes:salvar',['teste-api',{}],409);await op('sessoes:excluir',['teste-api'],409)
+ await nav('principal');await nav(alvo)
+ const reaberto=await state(alvo);assert.equal(reaberto.paginas.length,2);assert.equal(reaberto.bindings.length,2);assert.ok(reaberto.formas.some(s=>s.id==='shape:nota'))
+ await cmd('updateInstanceState',[{isReadonly:true}]);await cmd('deleteShapes',[['shape:a']],409);await cmd('updateInstanceState',[{isReadonly:false}])
+ await nav('principal');alvo='principal'
+ const canonico=(await state(alvo)).formas.find(s=>s.projetada);assert.ok(canonico)
+ await cmd('updateShapes',[[{id:canonico.id,type:canonico.type,x:999}]],409);assert.notEqual((await state(alvo)).formas.find(s=>s.id===canonico.id).x,999)
+ await cmd('createShapes',[[{id:'shape:livre',type:'geo',x:900,y:300,text:'Desenho livre',props:{w:200,h:100}}]])
+ await cmd('createShapes',[[{id:'shape:seta-livre',type:'arrow',x:900,y:500,props:{start:{x:0,y:0},end:{x:200,y:100}}}]])
+ await op('blocos:atualizar',['canonico',{titulo:'Fonte atualizada via API'}])
+ for(let i=0;i<100;i++){if((await state('principal')).formas.some(s=>s.texto.includes('Fonte atualizada via API')))break;await esperar(25)}
+ assert.ok((await state('principal')).formas.some(s=>s.texto.includes('Fonte atualizada via API')))
+ assert.ok((await state('principal')).formas.some(s=>s.id==='shape:seta-livre'))
+ const pagina = await request('/api/v1/canvas/estado?alvo=principal&limite=1')
+ assert.equal(pagina.formas.length,1);assert.ok(pagina.proximoOffset)
+ await nav('sessao:teste-api');await nav('principal');assert.ok((await state('principal')).formas.some(s=>s.id==='shape:livre'))
+ assert.equal(fs.readdirSync(data).filter(n=>n.endsWith('.md')).length,1)
+ assert.equal(erros.length,0,erros.join('\n'));console.log(`Evidências nativas: ${tmp}`)
+})
