@@ -443,6 +443,7 @@ test('matriz padrão não inclui Copilot nem Gemini', async (t) => {
     'pi',
     'buzz',
     'whatsapp',
+    'sussurro',
     'league-of-legends',
   ])
 })

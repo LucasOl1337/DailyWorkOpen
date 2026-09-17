@@ -478,6 +478,12 @@ function resumirPacoteLucasOL(pacote) {
           resumo: textoLimitado(pacote.analiseRecente.summaryMarkdown, 4_000),
         }
       : null,
+    ditados: Array.isArray(pacote?.ditados)
+      ? pacote.ditados.slice(-16).map(({ timestamp, text }) => ({
+          quando: textoLimitado(timestamp, 40),
+          texto: textoLimitado(text, 1_200),
+        }))
+      : [],
   }
 }
 

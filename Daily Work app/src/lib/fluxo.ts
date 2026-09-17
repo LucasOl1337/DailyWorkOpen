@@ -12,10 +12,15 @@ export interface ProjetoContexto {
 }
 
 export interface ReferenciaContexto {
-  kind: 'project_registry' | 'project_packet' | 'knowledge' | 'skill' | 'work_signals' | 'daily_summary'
-  source: 'workspace' | 'knowledge' | 'skills' | 'work-signals' | 'daily-summary'
+  kind: 'project_registry' | 'project_packet' | 'knowledge' | 'skill' | 'work_signals' | 'daily_summary' | 'dictation'
+  source: 'workspace' | 'knowledge' | 'skills' | 'work-signals' | 'daily-summary' | 'sussurro'
   ref: string
   status: 'available' | 'unavailable' | 'fresh' | 'stale'
+}
+
+export interface DitadoContexto {
+  timestamp: string | null
+  text: string
 }
 
 export interface ConhecimentoContexto {
@@ -88,6 +93,7 @@ export interface PacoteContextoDia {
   riscos: { code: string; message: string }[]
   propostas: PropostaContexto[]
   analiseRecente: AnaliseRecenteContexto | null
+  ditados: DitadoContexto[]
   fontes: ReferenciaContexto[]
 }
 

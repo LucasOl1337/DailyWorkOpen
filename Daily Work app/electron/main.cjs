@@ -44,9 +44,11 @@ function exigirIdJobMidia(id) {
   return id
 }
 let analiseSumario = null
+let sumario = null
 const fluxoLucasOL = criarFluxoLucasOL({
   daily: lib,
   obterAnaliseSumario: (dia) => (analiseSumario ? analiseSumario.obter(dia) : null),
+  obterInputsSumario: (dia) => (sumario ? sumario.obterInputs(dia) : null),
 })
 
 // Conexões externas (GitHub, LinkedIn, X, Reddit): cofre cifrado em userData,
@@ -66,7 +68,7 @@ const executorNativo = criarServicoExecutorNativo({
   executarComFerramentas: (entrada) => agente.executarComFerramentas(entrada),
   onUpdate: (estado) => janela?.webContents.send('executor:atualizado', estado),
 })
-const sumario = criarServicoSumario({ appRoot: path.resolve(__dirname, '..'), fontesExtras: integracoes.fontesSumario() })
+sumario = criarServicoSumario({ appRoot: path.resolve(__dirname, '..'), fontesExtras: integracoes.fontesSumario() })
 analiseSumario = criarServicoAnaliseSumario({
   sumario,
   completar: (entrada) => agente.completar(entrada),

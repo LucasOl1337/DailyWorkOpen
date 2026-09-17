@@ -10,6 +10,7 @@ const { coletarGrokCli } = require('./sumario/fontes/grok-cli.cjs')
 const { coletarLeague } = require('./sumario/fontes/league-of-legends.cjs')
 const { coletarOpenCode } = require('./sumario/fontes/opencode.cjs')
 const { coletarPi } = require('./sumario/fontes/pi.cjs')
+const { coletarSussurro } = require('./sumario/fontes/sussurro.cjs')
 const { coletarWhatsApp } = require('./sumario/fontes/whatsapp.cjs')
 const {
   classificarDelegacoesMaestri,
@@ -39,6 +40,7 @@ const FONTES = Object.freeze([
   coletarPi,
   coletarBuzz,
   coletarWhatsApp,
+  coletarSussurro,
   coletarLeague,
 ])
 
@@ -78,6 +80,9 @@ function resolverDiretorios(opcoes) {
       'exports',
       'extrair-daily-work-whatsapp'
     )),
+    ...(opcoes.sussurroHistoryDir
+      ? { sussurroHistoryDir: path.resolve(opcoes.sussurroHistoryDir) }
+      : {}),
   }
 }
 

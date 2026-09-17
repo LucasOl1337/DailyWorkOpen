@@ -249,7 +249,7 @@ export function PainelInputsSumario({
 
           <footer className="sumario-inputs__coverage">
             <strong>O que esta aba mostra</strong>
-            <span>Esta aba reúne todas as suas mensagens encontradas nas fontes acima. O WhatsApp aparece quando há uma extração local validada. Em jogos, os registros mostram a partida, mas não o que você digitou no chat.</span>
+            <span>Esta aba reúne todas as suas mensagens encontradas nas fontes acima. Ditados do Sussurro entram como fala sua. O WhatsApp aparece quando há uma extração local validada. Em jogos, os registros mostram a partida, mas não o que você digitou no chat.</span>
           </footer>
         </>
       )}

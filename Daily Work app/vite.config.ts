@@ -25,9 +25,11 @@ const { criarMiddlewareCandidaturas } = require('./electron/candidaturas/operaco
 const { criarMiddlewareAutomacoes } = require('./electron/automacoes/http.cjs')
 const { dataValida, diaLocal } = require('./electron/sumario/shared.cjs')
 let analiseSumario: any = null
+let sumario: any = null
 const fluxoLucasOL = criarFluxoLucasOL({
   daily: lib,
   obterAnaliseSumario: (dia: string) => (analiseSumario ? analiseSumario.obter(dia) : null),
+  obterInputsSumario: (dia: string) => (sumario ? sumario.obterInputs(dia) : null),
 })
 // Fora do Electron não existe safeStorage: o cofre usa uma chave local 0600
 // em DAILYWORK_USER_DATA_DIR (padrão ~/.config/DailyWork), a mesma pasta do app.
@@ -40,7 +42,7 @@ const executorNativo = criarServicoExecutorNativo({
   lib,
   executarComFerramentas: (entrada: unknown) => agente.executarComFerramentas(entrada),
 })
-const sumario = criarServicoSumario({
+sumario = criarServicoSumario({
   appRoot: path.dirname(fileURLToPath(import.meta.url)),
   fontesExtras: integracoes.fontesSumario(),
 })

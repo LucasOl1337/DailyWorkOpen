@@ -543,3 +543,42 @@ test('próxima ação de todos os projetos ativos entra no pacote', () => {
   assert.equal(proximas[0].bloco.titulo, 'Abrir o Diário com sugestões.')
   assert.ok(pacote.propostas.length <= 10)
 })
+
+test('ditados do Sussurro escolhem notas de conhecimento no mesmo dia', () => {
+  const { lucasOlDir, escrever } = ambiente()
+  escrever('Workspace/projects/registry.json', JSON.stringify({ version: 1, projects: [] }))
+  escrever(
+    'Knowledge/Comunicação/Entrada por voz.md',
+    '# Entrada por voz\n\nUse ditado local para preservar o que foi falado nas sessões.\n'
+  )
+  escrever(
+    'Knowledge/Outros/Assunto irrelevante.md',
+    '# Assunto irrelevante\n\nNada sobre o tema da conversa do dia.\n'
+  )
+  const daily = {
+    listarDias: () => ['2026-08-11'],
+    listarBlocos: () => [],
+  }
+  const { criarFluxoLucasOL } = require('../electron/lib-fluxo-lucasol.cjs')
+  const pacote = criarFluxoLucasOL({
+    daily,
+    lucasOlDir,
+    agora: () => new Date('2026-08-11T12:00:00.000Z'),
+    obterInputsSumario: (dia) => {
+      if (dia !== '2026-08-11') return { inputs: [] }
+      return {
+        inputs: [{
+          source: 'sussurro',
+          timestamp: '2026-08-11T11:10:00.000Z',
+          text: 'Quero preservar o ditado local nas sessões de hoje.',
+        }],
+      }
+    },
+  }).prepararDia({ dia: '2026-08-11' })
+
+  assert.equal(pacote.ditados.length, 1)
+  assert.equal(pacote.ditados[0].text, 'Quero preservar o ditado local nas sessões de hoje.')
+  assert.equal(pacote.conhecimento[0].titulo, 'Entrada por voz')
+  assert.equal(pacote.conhecimento.some((nota) => nota.titulo === 'Assunto irrelevante'), false)
+  assert.ok(pacote.fontes.some((fonte) => fonte.kind === 'dictation' && fonte.source === 'sussurro'))
+})

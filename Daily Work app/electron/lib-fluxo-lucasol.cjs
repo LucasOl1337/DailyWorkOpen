@@ -163,7 +163,13 @@ function extrairBulletsSumario(markdown) {
   return bullets
 }
 
-function criarFluxoLucasOL({ daily, lucasOlDir = LUCASOL_DIR_PADRAO, agora = () => new Date(), obterAnaliseSumario = null }) {
+function criarFluxoLucasOL({
+  daily,
+  lucasOlDir = LUCASOL_DIR_PADRAO,
+  agora = () => new Date(),
+  obterAnaliseSumario = null,
+  obterInputsSumario = null,
+} = {}) {
   if (!daily || typeof daily.listarBlocos !== 'function' || typeof daily.listarDias !== 'function') {
     throw new Error('daily precisa expor listarBlocos e listarDias')
   }
@@ -327,6 +333,23 @@ function criarFluxoLucasOL({ daily, lucasOlDir = LUCASOL_DIR_PADRAO, agora = () 
     return null
   }
 
+  function lerDitados(dia) {
+    if (typeof obterInputsSumario !== 'function') return []
+    try {
+      const indice = obterInputsSumario(dia)
+      const inputs = Array.isArray(indice?.inputs) ? indice.inputs : []
+      return inputs
+        .filter((item) => item?.source === 'sussurro' && String(item.text || '').trim())
+        .slice(-40)
+        .map((item) => ({
+          timestamp: item.timestamp || null,
+          text: String(item.text).trim().slice(0, 4_000),
+        }))
+    } catch {
+      return []
+    }
+  }
+
   function prepararDia({ dia, projetoId } = {}) {
     if (typeof dia !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(dia)) {
       throw new Error('dia inválido')
@@ -348,6 +371,7 @@ function criarFluxoLucasOL({ daily, lucasOlDir = LUCASOL_DIR_PADRAO, agora = () 
     const packet = lerPacket(projeto)
     const sinaisInfo = lerSinais(projeto, instante)
     const analiseRecente = localizarAnaliseRecente(dia)
+    const ditados = lerDitados(dia)
     const idsHoje = new Set(hoje.map((bloco) => bloco.id))
     const carryoversHoje = new Set(hoje.map((bloco) => bloco.carryoverDe).filter(Boolean))
     const propostas = []
@@ -432,6 +456,7 @@ function criarFluxoLucasOL({ daily, lucasOlDir = LUCASOL_DIR_PADRAO, agora = () 
       ...(projeto?.aliases || []),
       packet?.conteudo,
       analiseRecente?.summaryMarkdown,
+      ...ditados.map((ditado) => ditado.text),
       ...hoje.map((bloco) => `${bloco.titulo} ${bloco.corpo || ''}`),
       ...carryovers.map((bloco) => `${bloco.titulo} ${bloco.corpo || ''}`),
       ...sinaisInfo.sinais.map((sinal) => `${sinal.title} ${sinal.evidence || ''}`),
@@ -444,6 +469,9 @@ function criarFluxoLucasOL({ daily, lucasOlDir = LUCASOL_DIR_PADRAO, agora = () 
       ...(packet ? [{ kind: 'project_packet', source: 'workspace', ref: projeto.packet, status: 'available' }] : []),
       ...(analiseRecente
         ? [{ kind: 'daily_summary', source: 'daily-summary', ref: `sumario:${analiseRecente.dia}/analise`, status: 'available' }]
+        : []),
+      ...(ditados.length
+        ? [{ kind: 'dictation', source: 'sussurro', ref: `sumario:${dia}/sussurro`, status: 'available' }]
         : []),
       ...conhecimento.map((item) => ({ kind: 'knowledge', source: 'knowledge', ref: item.sourceRef, status: 'available' })),
       ...skills.map((item) => ({ kind: 'skill', source: 'skills', ref: item.sourceRef, status: 'available' })),
@@ -464,6 +492,7 @@ function criarFluxoLucasOL({ daily, lucasOlDir = LUCASOL_DIR_PADRAO, agora = () 
       riscos: detectarRiscos({ hoje, projeto, sinaisInfo, instante }),
       propostas: propostas.slice(0, 10),
       analiseRecente,
+      ditados,
       fontes,
     }
     const { generatedAt: _generatedAt, ...conteudoEstavel } = base

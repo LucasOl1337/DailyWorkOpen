@@ -352,6 +352,13 @@ export function PreparacaoDia({
                   <ul>
                     {pacote.conhecimento.slice(0, 3).map((nota) => <li key={nota.caminho}>{nota.titulo}</li>)}
                     {pacote.conhecimento.length === 0 && <li>Nenhuma nota relacionada.</li>}
+                    {(pacote.ditados?.length ?? 0) > 0 && (
+                      <li>
+                        {pacote.ditados.length === 1
+                          ? '1 ditado do Sussurro neste dia'
+                          : `${pacote.ditados.length} ditados do Sussurro neste dia`}
+                      </li>
+                    )}
                   </ul>
                 </article>
                 <article>
