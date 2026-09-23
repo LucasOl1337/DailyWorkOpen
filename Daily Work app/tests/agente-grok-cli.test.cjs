@@ -58,6 +58,7 @@ test('catálogo do Grok CLI tem Grok 4.6 com fallback para Grok 4.5', () => {
   assert.equal(porId.get('grok-4-6').rota, 'grok-4.6')
   assert.equal(porId.get('grok-4-6').fallbackId, 'grok-4-5')
   assert.equal(porId.get('grok-4-6-high').effort, 'high')
+  assert.equal(porId.get('grok-4-7').rota, 'grok-4.7')
   assert.equal(porId.has('gpt-5-6-sol-high'), false)
 })
 
@@ -68,7 +69,7 @@ test('configuração reporta o Grok CLI e os modelos sondados', async () => {
   assert.equal(config.provider, 'grok-cli')
   assert.equal(config.conectado, true)
   assert.equal(config.perfilPadrao, 'grok-4-6')
-  assert.equal(config.perfis.length, 4)
+  assert.equal(config.perfis.length, 5)
   assert.equal(config.perfis.find((perfil) => perfil.id === 'grok-4-6').catalogado, true)
   assert.equal(config.perfis.find((perfil) => perfil.id === 'grok-4-6').fallback, 'grok-4.5')
 })

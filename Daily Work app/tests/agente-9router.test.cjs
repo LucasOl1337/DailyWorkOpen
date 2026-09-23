@@ -107,9 +107,9 @@ function chavesRecursivas(valor, resultado = []) {
 }
 
 test('catálogo inclui as rotas base de escrita e revisão sem perder as rotas com esforço', () => {
-  assert.equal(PERFIS_9ROUTER.length, 14)
-  assert.equal(ROTAS_9ROUTER.length, 14)
-  assert.equal(new Set(ROTAS_9ROUTER).size, 14)
+  assert.equal(PERFIS_9ROUTER.length, 22)
+  assert.equal(ROTAS_9ROUTER.length, 22)
+  assert.equal(new Set(ROTAS_9ROUTER).size, 22)
   assert.deepEqual(new Set(PERFIS_9ROUTER.map((perfil) => perfil.rota)), new Set(ROTAS_9ROUTER))
 
   const porId = new Map(PERFIS_9ROUTER.map((perfil) => [perfil.id, perfil]))
@@ -117,6 +117,9 @@ test('catálogo inclui as rotas base de escrita e revisão sem perder as rotas c
   assert.equal(porId.get('gpt-5-6-sol-high').rota, 'cx/gpt-5.6-sol(high)')
   assert.equal(porId.get('gpt-5-6-sol').rota, 'cx/gpt-5.6-sol')
   assert.equal(porId.get('gpt-5-6-luna').rota, 'cx/gpt-5.6-luna')
+  assert.equal(porId.get('grok-4-7').rota, 'gcli/grok-4.7')
+  assert.equal(porId.get('gpt-6-sol-medium').rota, 'cx/gpt-6-sol(medium)')
+  assert.equal(porId.get('gpt-6-astra-xhigh').rota, 'cx/gpt-6-astra(xhigh)')
 })
 
 test('catálogo oferece Grok 4.6 pelo 9Router', () => {

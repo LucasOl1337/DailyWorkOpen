@@ -41,6 +41,14 @@ const DESCRICAO_DIA_ALVO = 'Dia alvo no formato AAAA-MM-DD. Se omitido, vale o d
 // Catálogo desejado exato do provider 9router. O effort pertence ao id da rota;
 // este cliente nunca envia reasoning_effort/thinking por fora.
 const PERFIS_9ROUTER = Object.freeze([
+  { id: 'grok-4-7', nome: 'Grok 4.7', familia: 'Grok', rota: 'gcli/grok-4.7', fallbackId: 'grok-4-6' },
+  { id: 'gpt-6-luna-medium', nome: 'GPT 6 Luna Medium', familia: 'GPT', rota: 'cx/gpt-6-luna(medium)', fallbackId: 'grok-4-6' },
+  { id: 'gpt-6-sol-medium', nome: 'GPT 6 Sol Medium', familia: 'GPT', rota: 'cx/gpt-6-sol(medium)', fallbackId: 'grok-4-6' },
+  { id: 'gpt-6-sol-high', nome: 'GPT 6 Sol High', familia: 'GPT', rota: 'cx/gpt-6-sol(high)', fallbackId: 'grok-4-6' },
+  { id: 'gpt-6-sol-xhigh', nome: 'GPT 6 Sol xhigh', familia: 'GPT', rota: 'cx/gpt-6-sol(xhigh)', fallbackId: 'grok-4-6' },
+  { id: 'gpt-6-astra-medium', nome: 'GPT 6 Astra Medium', familia: 'GPT', rota: 'cx/gpt-6-astra(medium)', fallbackId: 'grok-4-6' },
+  { id: 'gpt-6-astra-high', nome: 'GPT 6 Astra High', familia: 'GPT', rota: 'cx/gpt-6-astra(high)', fallbackId: 'grok-4-6' },
+  { id: 'gpt-6-astra-xhigh', nome: 'GPT 6 Astra xhigh', familia: 'GPT', rota: 'cx/gpt-6-astra(xhigh)', fallbackId: 'grok-4-6' },
   { id: 'gpt-5-6-sol', nome: 'GPT 5.6 Sol', familia: 'GPT', rota: 'cx/gpt-5.6-sol', fallbackId: 'cursor-grok-4-6-high' },
   { id: 'gpt-5-6-luna', nome: 'GPT 5.6 Luna', familia: 'GPT', rota: 'cx/gpt-5.6-luna', fallbackId: 'cursor-grok-4-6-high' },
   { id: 'gpt-5-5', nome: 'GPT 5.5', familia: 'GPT', rota: 'cx/gpt-5.5', fallbackId: 'cursor-grok-4-6-high' },
@@ -59,6 +67,7 @@ const PERFIS_9ROUTER = Object.freeze([
 
 const ROTAS_9ROUTER = Object.freeze([...new Set(PERFIS_9ROUTER.map((perfil) => perfil.rota))])
 const PERFIS_GROK_CLI = Object.freeze([
+  { id: 'grok-4-7', nome: 'Grok 4.7', familia: 'Grok', rota: 'grok-4.7', fallbackId: 'grok-4-6' },
   { id: 'grok-4-6', nome: 'Grok 4.6', familia: 'Grok', rota: 'grok-4.6', fallbackId: 'grok-4-5' },
   { id: 'grok-4-6-high', nome: 'Grok 4.6 High', familia: 'Grok', rota: 'grok-4.6', effort: 'high', fallbackId: 'grok-4-5' },
   { id: 'grok-4-5', nome: 'Grok 4.5', familia: 'Grok', rota: 'grok-4.5' },
