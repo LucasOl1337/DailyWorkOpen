@@ -740,8 +740,7 @@ function iniciarWatcher() {
   fs.mkdirSync(lib.DATA_DIR, { recursive: true })
   let timer = null
   fs.watch(lib.DATA_DIR, { recursive: true }, (_evento, nome) => {
-    const relativo = String(nome || '').replace(/\\/g, '/').toLowerCase()
-    if (relativo.startsWith('sumarios/')) return
+    if (!lib.ehArquivoDeBloco(nome)) return
     if (!lib.foiEscritaExterna()) return
     if (timer) clearTimeout(timer)
     timer = setTimeout(() => {

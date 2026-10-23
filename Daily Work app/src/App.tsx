@@ -1,15 +1,13 @@
 import {navegarPara} from './lib/destinos'
 import { ResolucaoPendencias } from './components/ResolucaoPendencias'
 import { atualizarViewAgentes, conectarControleAgentes } from './lib/canvas-agentes'
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import 'tldraw/tldraw.css'
 import { Sidebar } from './components/Sidebar'
 import { Hoje } from './components/Hoje'
 import { ProvedorEstadoGlobal } from './lib/estado-global'
 import './components/ui/ui.css'
-import { QuadroPrincipal } from './components/QuadroPrincipal'
 import { QuadroDia } from './components/QuadroDia'
-import { SessaoLivre } from './components/SessaoLivre'
 import { SiteLucasOL } from './components/SiteLucasOL'
 import { ConexaoExterna } from './components/ConexaoExterna'
 import { SumarioDiario } from './components/SumarioDiario'
@@ -19,6 +17,10 @@ import { Automacoes } from './components/Automacoes'
 import { Skills } from './components/Skills'
 import { LogicaEditorial } from './components/LogicaEditorial'
 import { hojeLocal, limitarViewSumarioAoHoje } from './lib/data-local'
+
+// Os canvases trazem o tldraw (a maior parte do bundle): só carregam ao abrir.
+const QuadroPrincipal = lazy(() => import('./components/QuadroPrincipal').then(m => ({ default: m.QuadroPrincipal })))
+const SessaoLivre = lazy(() => import('./components/SessaoLivre').then(m => ({ default: m.SessaoLivre })))
 
 // view = principal | site | fila | logica | agente | automacoes | skills | conexao:<id> | dia:AAAA-MM-DD | sumario:AAAA-MM-DD | sessao:<id>.
 // O trabalho abre sempre no dia local atual; Principal é conteúdo geral.
@@ -95,6 +97,7 @@ export default function App() {
       <div className="dw-shell">
         <Sidebar view={view} onMudar={(proximaView) => navegarPara({view:limitarViewSumarioAoHoje(proximaView)})} />
         <div className="dw-main">
+          <Suspense fallback={null}>
           {view === 'hoje' && <Hoje />}
           {view === 'principal' && (
             <QuadroPrincipal key={view} onAbrirSessao={(id) => setView(`sessao:${id}`)} />
@@ -109,6 +112,7 @@ export default function App() {
           {dia && <QuadroDia key={dia} dia={dia} />}
           {sumario && <SumarioDiario key={sumario} dia={sumario} />}
           {sessao && <SessaoLivre key={view} sessaoId={sessao} />}
+          </Suspense>
         </div>
       </div>
     </ProvedorEstadoGlobal>
