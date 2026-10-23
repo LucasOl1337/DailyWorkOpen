@@ -254,6 +254,8 @@ test('a Fila distingue job enfileirado de publicado e sincroniza recibo', async 
     (e) => e.codigo === 'ESTADO_INVALIDO',
   )
   await f.s.processar()
+  const [listado] = await fila.listar()
+  assert.equal(listado.estado, 'publicado')
   const final = await fila.obter(i.id)
   assert.equal(final.estado, 'publicado')
   assert.match(final.recibo.url, /activity:123/)

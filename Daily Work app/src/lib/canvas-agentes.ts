@@ -1,4 +1,5 @@
-import { Editor, getSnapshot, loadSnapshot, toRichText, type TLShape, type TLShapeId } from 'tldraw'
+// Só tipos no topo: o App importa este módulo e o tldraw fica no chunk dos canvases.
+import type { Editor, TLShape, TLShapeId, toRichText } from 'tldraw'
 import comandos from '../../electron/canvas-comandos.json'
 
 type Mensagem = { id: string; tipo: string; entrada?: Record<string, any> }
@@ -19,9 +20,9 @@ export function registrarCanvasAgentes(editor: Editor, alvo: string, salvar: () 
   if (editor.isDisposed) return () => {}
   let versao = 0
   const instancia = crypto.randomUUID()
-  let anterior = JSON.stringify(getSnapshot(editor.store).document)
+  let anterior = JSON.stringify(editor.store.getStoreSnapshot())
   const registro = { alvo, editor, salvar, revisao: `${instancia}:0`, atualizarRevisao() {
-    const atual = JSON.stringify(getSnapshot(editor.store).document)
+    const atual = JSON.stringify(editor.store.getStoreSnapshot())
     if (atual !== anterior) { anterior = atual; registro.revisao = `${instancia}:${++versao}` }
   } }
   ativo = registro
@@ -59,7 +60,7 @@ function estado(entrada: Record<string, any> = {}) {
     tipos: Object.keys(e.shapeUtils), comandos,
   }
 }
-function executar(e: Editor, comando: string, args: any[], principal: boolean) {
+function executar(e: Editor, comando: string, args: any[], principal: boolean, richText: typeof toRichText) {
   if (!metodos.includes(comando as never)) falhar('COMANDO_INVALIDO', `Comando não permitido: ${comando}`)
   if (!Array.isArray(args) || args.length > 4) falhar('ARGUMENTOS_INVALIDOS', 'args deve ser uma lista de até quatro argumentos.')
   if (comando === 'updateInstanceState' && Object.keys(args[0] || {}).some(k => !['isReadonly', 'isGridMode', 'isFocusMode', 'isDebugMode'].includes(k))) falhar('ARGUMENTOS_INVALIDOS', 'Estado permite apenas isReadonly, isGridMode, isFocusMode e isDebugMode.')
@@ -69,13 +70,13 @@ function executar(e: Editor, comando: string, args: any[], principal: boolean) {
       if (typeof s?.id !== 'string' || !s.id.startsWith('shape:') || e.getShape(s.id)) falhar('ID_INVALIDO', 'Cada criação exige um novo id shape:<id>.')
       if (s.meta?.blockId || s.meta?.dailyworkKind || s.type?.startsWith('dailywork-')) falhar('FORMA_PROJETADA', 'Crie cards por blocos:criar; conhecimento pelo vault.')
       const { text, ...shape } = s
-      return { ...shape, meta: { ...shape.meta, dailyworkNative: true }, ...(text !== undefined ? { props: { ...shape.props, richText: toRichText(String(text)) } } : {}) }
+      return { ...shape, meta: { ...shape.meta, dailyworkNative: true }, ...(text !== undefined ? { props: { ...shape.props, richText: richText(String(text)) } } : {}) }
     })]
   }
   if (comando === 'updateShapes') args = [args[0]?.map((s: any) => {
     if (!e.getShape(s.id)) falhar('NAO_ENCONTRADO', `Forma ausente: ${s.id}`, 404)
     const { text, ...shape } = s
-    return { ...shape, ...(text !== undefined ? { props: { ...shape.props, richText: toRichText(String(text)) } } : {}) }
+    return { ...shape, ...(text !== undefined ? { props: { ...shape.props, richText: richText(String(text)) } } : {}) }
   })]
   if (e.getInstanceState().isReadonly && !semDocumento.has(comando)) falhar('SOMENTE_LEITURA', 'Lousa em apresentação. Altere isReadonly explicitamente antes de editar.', 409)
   // Nenhuma chamada dinâmica fora desta lista alcança o Editor.
@@ -110,6 +111,7 @@ export async function atenderCanvas(m: Mensagem) {
   if (m.tipo === 'canvas.estado') return estado(entrada)
   if (m.tipo !== 'canvas.comando') falhar('COMANDO_INVALIDO', 'Tipo de mensagem desconhecido.')
   const registro = ativo
+  const { getSnapshot, loadSnapshot, toRichText } = await import('tldraw')
   registro.atualizarRevisao()
   const e = registro.editor
   if (entrada.comando === 'snapshot') return { alvo: registro.alvo, revisao: registro.revisao, snapshot: getSnapshot(e.store) }
@@ -152,7 +154,7 @@ export async function atenderCanvas(m: Mensagem) {
       // Erros de entrada precisam ser tratados dentro da transação externa:
       // o HistoryManager do SDK considera exceções que escapam dela um crash.
       e.run(() => {
-        try { for (const acao of lote) executar(e, acao.comando, acao.args || [], principal) }
+        try { for (const acao of lote) executar(e, acao.comando, acao.args || [], principal, toRichText) }
         catch (err) { falhaLote = err; loadSnapshot(e.store, antes) }
       })
       if (falhaLote) throw falhaLote

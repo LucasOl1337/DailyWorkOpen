@@ -508,8 +508,15 @@ test('vídeo automático dispensa roteiro manual e revisa o MP4 antes de anexar'
   fs.mkdirSync(path.dirname(path.join(dataDir, 'editorial', arquivo)), { recursive: true })
   fs.writeFileSync(path.join(dataDir, 'editorial', arquivo), PNG_EDITORIAL)
   const comImagem = await fila.atualizar(item.id, { revisao: item.revisao, midias: [{ id: 'cena', tipo: 'imagem', arquivo }], formato: 'imagem' })
+  // Compose de fixture: monta o MP4 do roteiro com ffmpeg, sem depender da skill vitrine local.
+  const compor = path.join(TMP, 'compose-slides.cjs')
+  fs.writeFileSync(compor, `const fs=require('fs'),path=require('path'),{execFileSync}=require('child_process')
+const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8')),[w,h]=r.size
+const entradas=r.segments.flatMap(s=>['-loop','1','-t',String(s.dur),'-i',s.slide])
+const filtro=r.segments.map((_,i)=>'['+i+':v]scale='+w+':'+h+':force_original_aspect_ratio=decrease,pad='+w+':'+h+':(ow-iw)/2:(oh-ih)/2,setsar=1,fps='+r.fps+'[v'+i+']').join(';')+';'+r.segments.map((_,i)=>'[v'+i+']').join('')+'concat=n='+r.segments.length+':v=1[v]'
+execFileSync('ffmpeg',['-y','-loglevel','error',...entradas,'-filter_complex',filtro,'-map','[v]','-c:v','libx264','-pix_fmt','yuv420p',path.join(path.dirname(process.argv[2]),r.out)])`)
   let revisoes = 0
-  const jobs = criarJobsMidiasEditoriais({ fila, dataDir, completar: async () => { throw Error('Sem geração de texto neste teste') },
+  const jobs = criarJobsMidiasEditoriais({ fila, dataDir, vitrinePython: process.execPath, vitrineCompose: compor, completar: async () => { throw Error('Sem geração de texto neste teste') },
     completarComImagens: async ({ mensagens, imagens }) => {
       revisoes++; assert.ok(imagens.length >= 1)
       const saidas = JSON.parse(mensagens[1].content).saidas

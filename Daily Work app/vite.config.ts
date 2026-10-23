@@ -792,6 +792,7 @@ function watchBlocos(): Plugin {
       let timer: ReturnType<typeof setTimeout> | null = null
       const avisar = (arquivo: string) => {
         if (!caminhoDentro(arquivo, lib.DATA_DIR)) return
+        if (!lib.ehArquivoDeBloco(path.relative(lib.DATA_DIR, arquivo))) return
         if (!lib.foiEscritaExterna()) return
         if (timer) clearTimeout(timer)
         timer = setTimeout(() => server.ws.send('dailywork:blocos-externos', {}), 400)

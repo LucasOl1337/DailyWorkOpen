@@ -1,3 +1,6 @@
+// O dia do sumário é local e as fixtures usam -03:00: fixa o fuso para o
+// resultado não depender da máquina (o CI roda em UTC).
+process.env.TZ = 'America/Sao_Paulo'
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const os = require('node:os')

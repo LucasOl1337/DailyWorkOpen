@@ -113,7 +113,7 @@ function criarAgenda({ arquivo, adaptadores = {}, rotinas = [], now = Date.now, 
       for (const h of horarios) inserir(r, l.dia, instante(l.dia,h,r.fuso))
     }
   }
-  function uso(r, dia) { const os = listarOcorrencias(dia).filter(o => o.rotina === r.id); return { realizado: os.reduce((n,o) => n+(o.realizado||0),0), tokens: os.reduce((n,o) => n+(o.tokens||0),0) } }
+  function uso(r, dia, ocorrencias = listarOcorrencias(dia)) { const os = ocorrencias.filter(o => o.rotina === r.id); return { realizado: os.reduce((n,o) => n+(o.realizado||0),0), tokens: os.reduce((n,o) => n+(o.tokens||0),0) } }
   function autorizar(id) {
     const o = obter(id), r = rotina(o.rotina), l = local(now(), r.fuso)
     if (o.estado !== 'executando' || (!r.ativa && !o.avulsa) || pausada(r,l.dia)) throw falha('AGENDA_PAUSADA', 'A rotina está pausada.')
@@ -289,7 +289,8 @@ function criarAgenda({ arquivo, adaptadores = {}, rotinas = [], now = Date.now, 
     dia ||= local(now()).dia
     const rs=todas().filter(r=>!modulo||r.modulo===modulo)
     const proxima=r=>{if(!r.ativa)return null;for(let n=0;n<8;n++){const d=new Date(Date.parse(local(now(),r.fuso).dia+'T12:00:00Z')+n*86400000).toISOString().slice(0,10);if(!r.dias.includes(new Date(d+'T12:00:00Z').getUTCDay())||pausada(r,d))continue;const hs=r.intervalo?Array.from({length:Math.ceil(1440/r.intervalo)},(_,i)=>`${String(Math.floor(i*r.intervalo/60)).padStart(2,'0')}:${String(i*r.intervalo%60).padStart(2,'0')}`):r.horarios;const ts=hs.filter(h=>h<=r.fim).map(h=>instante(d,h,r.fuso)).filter(t=>t>now()).sort((a,b)=>a-b);if(ts.length)return ts[0]}return null}
-    return {dia,servico:{ativo:Boolean(timer),ultimaVerificacao},rotinas:rs.map(r=>({...r,uso:uso(r,dia),pausada:pausada(r,dia),proxima:proxima(r)})),ocorrencias:listarOcorrencias(dia).filter(o=>!modulo||o.modulo===modulo).reverse(),orientacoes:modulo?orientacoes(modulo,dia):db.prepare('SELECT data FROM instrucoes WHERE dia=?').all(dia).map(v=>JSON.parse(v.data))}
+    const doDia=listarOcorrencias(dia)
+    return {dia,servico:{ativo:Boolean(timer),ultimaVerificacao},rotinas:rs.map(r=>({...r,uso:uso(r,dia,doDia),pausada:pausada(r,dia),proxima:proxima(r)})),ocorrencias:doDia.filter(o=>!modulo||o.modulo===modulo).reverse(),orientacoes:modulo?orientacoes(modulo,dia):db.prepare('SELECT data FROM instrucoes WHERE dia=?').all(dia).map(v=>JSON.parse(v.data))}
   }
   function detalhes({id}) { const o=obter(id);return {...o,eventos:db.prepare('SELECT em,data FROM eventos WHERE ocorrencia=? ORDER BY id').all(id).map(e=>({em:e.em,...JSON.parse(e.data)}))} }
   function iniciar(){if(!timer){timer=setInterval(()=>void tick().catch(onError),15000);timer.unref?.();void tick().catch(onError)}}

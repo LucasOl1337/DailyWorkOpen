@@ -110,13 +110,12 @@ function criarFilaEditorial({ dataDir, registro, onUpdate, now = () => Date.now(
     }
     return bloqueios
   }
-  function prontidao(item) {
-    const { modo } = politicaPublicacao()
+  function prontidao(item, modo = politicaPublicacao().modo) {
     const bloqueios = item.estado === 'pendente' ? bloqueiosDePublicacao(item) : []
     return { pronta: item.estado === 'pendente' && !bloqueios.length, modo, bloqueios }
   }
-  function comProntidao(item) {
-    return item ? { ...clone(item), prontidao: prontidao(item) } : item
+  function comProntidao(item, modo) {
+    return item ? { ...clone(item), prontidao: prontidao(item, modo) } : item
   }
   // Canal api = agente. Sem modo automático, nada publica ou agenda por agente;
   // com ele, só peças sem bloqueio. A recusa fica na auditoria para o treino.
@@ -434,8 +433,8 @@ function criarFilaEditorial({ dataDir, registro, onUpdate, now = () => Date.now(
   recuperarPublicando()
 
   async function listar(filtros = {}) {
-    await reconciliarVisuais()
-    const itens = lerTodos().filter((item) => {
+    const { modo } = politicaPublicacao()
+    const itens = (await reconciliarVisuais(lerTodos())).filter((item) => {
       if (filtros.estado && item.estado !== filtros.estado) return false
       if (filtros.conta && item.conta !== filtros.conta) return false
       if (filtros.idioma && item.idioma !== filtros.idioma) return false
@@ -446,15 +445,24 @@ function criarFilaEditorial({ dataDir, registro, onUpdate, now = () => Date.now(
       const criado = String(b.criadoEm || b.atualizadoEm || '').localeCompare(String(a.criadoEm || a.atualizadoEm || ''))
       if (criado) return criado
       return String(b.atualizadoEm || '').localeCompare(String(a.atualizadoEm || ''))
-    }).map(comProntidao)
+    }).map((item) => comProntidao(item, modo))
   }
-  async function obter(id) { await reconciliarVisuais(); const item = lerArquivo(id); return comProntidao(item) }
+  async function obter(id) {
+    const item = lerArquivo(id)
+    if (!item) return item
+    const [atual = null] = await reconciliarVisuais([item])
+    return comProntidao(atual)
+  }
   async function verificar(id) { idSeguro(id); const item = lerArquivo(id); if (!item) throw new ErroFila('NAO_ENCONTRADO', `item não encontrado: ${id}`, 404); return { id, ...prontidao(item) } }
-  async function reconciliarVisuais() {
-    if (!registro.sessoes) return
-    for (const item of lerTodos().filter(i => i.publicacao?.jobId && ['aguardando_executor','publicando'].includes(i.estado))) {
+  // Recebe os itens já lidos e devolve a lista com os reconciliados atualizados,
+  // para que listar/obter não releiam a fila inteira do disco.
+  async function reconciliarVisuais(itens) {
+    if (!registro.sessoes) return itens
+    const atualizados = new Map()
+    for (const item of itens.filter(i => i.publicacao?.jobId && ['aguardando_executor','publicando'].includes(i.estado))) {
       await comLock(item.id, async () => {
         const atual = lerArquivo(item.id)
+        atualizados.set(item.id, atual)
         if (!atual?.publicacao?.jobId) return
         const job = registro.sessoes.obterJob(atual.publicacao.jobId)
         if (!job) return
@@ -464,8 +472,10 @@ function criarFilaEditorial({ dataDir, registro, onUpdate, now = () => Date.now(
         const novo = atualizarEstado(atual, { estado, publicacao: { ...atual.publicacao, estado: job.estado }, ...(job.erro ? { erro: { mensagem: job.erro } } : {}) })
         if (terminal) { novo.revisao++; delete novo.publicacao; if (job.recibo) novo.recibo = job.recibo }
         await persistir(novo); notificar(novo)
+        atualizados.set(item.id, novo)
       })
     }
+    return atualizados.size ? itens.map(i => atualizados.has(i.id) ? atualizados.get(i.id) : i).filter(Boolean) : itens
   }
   async function criar(entrada) {
     const candidato = normalizarEntrada(entrada)

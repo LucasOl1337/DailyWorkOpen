@@ -18,7 +18,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: Daily Work app/package-lock.json
+      # Media tests build real fixtures with ffmpeg/ffprobe; the runner image has neither.
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
       - run: npm ci
       - run: node node_modules/electron/install.js
-      - run: npm test
+      # Same as npm test, plus a TAP copy so failures surface as annotations.
+      - run: node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=tap --test-reporter-destination=test.tap "tests/**/*.test.cjs"
+      - if: failure()
+        run: awk '/^ *not ok/{if(m)print m;m="::error title=Test failed::"$0;c=0;next} m&&c<15{gsub(/%/,"%25");m=m"%0A"$0;c++} END{if(m)print m}' test.tap
       - run: npm run build

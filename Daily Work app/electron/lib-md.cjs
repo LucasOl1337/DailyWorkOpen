@@ -105,6 +105,16 @@ function foiEscritaExterna() {
   return Date.now() - ultimaEscritaPropria > 1500
 }
 
+// Só os .md de bloco (Principal na raiz de data/ ou dias/<data>/) mudam o que
+// os canvases leem. Logs, fila editorial, jobs e o snapshot nativo do Principal
+// não devem forçar o reload. Sem nome (alguns fs.watch), avisa por segurança.
+function ehArquivoDeBloco(relativo) {
+  if (!relativo) return true
+  const partes = String(relativo).replace(/\\/g, '/').split('/')
+  if (!partes[partes.length - 1].endsWith('.md')) return false
+  return partes.length === 1 || (partes.length === 3 && partes[0] === 'dias' && dataValida(partes[1]))
+}
+
 // ===================== Frontmatter =====================
 
 function novoBlocoId() {
@@ -913,6 +923,7 @@ module.exports = {
   contextoPrincipal,
   marcarEscritaPropria,
   foiEscritaExterna,
+  ehArquivoDeBloco,
   // expostos para testes
   blocoParaMd,
   mdParaBloco,

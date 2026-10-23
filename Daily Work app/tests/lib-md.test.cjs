@@ -411,3 +411,12 @@ test('conhecimento: arquiva nota com segurança movendo para _arquivo', () => {
   assert.ok(arquivos.some((n) => n.includes('Inteligência Artificial.md')))
 })
 
+
+test('watcher de data/ só recarrega canvases para .md de bloco', () => {
+  for (const nome of ['abc.md', 'dias/2026-10-23/abc.md', 'dias\\2026-10-23\\abc.md', null, '']) {
+    assert.equal(lib.ehArquivoDeBloco(nome), true, String(nome))
+  }
+  for (const nome of ['_log.ndjson', 'principal-canvas.json', 'editorial/itens/x.json', 'editorial/media-jobs/j/notas.md', 'sumarios/2026-10-23/x.md', 'dias/2026-10-23/_arquivo/abc.md', '_arquivo/abc.md']) {
+    assert.equal(lib.ehArquivoDeBloco(nome), false, nome)
+  }
+})
