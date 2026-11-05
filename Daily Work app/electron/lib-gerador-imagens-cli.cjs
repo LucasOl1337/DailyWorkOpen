@@ -10,9 +10,10 @@ const { execFileSync } = require('node:child_process')
 
 const GROK_MODELO = 'grok-imagine-image-2.0'
 const GROK_QUALIDADE = 'medium'
-const CODEX_MODELO_9ROUTER = 'cx/gpt-5.5-image'
-const CODEX_MODELO_SESSAO = 'gpt-image-2.5-sunburst'
-const CODEX_CHAT = 'gpt-5.5'
+const CODEX_MODELO_9ROUTER = 'cx/gpt-image-2'
+const CODEX_MODELO_SESSAO = 'gpt-image-2.6-sunburst'
+// gpt-5.5 é recusado pelo Codex com conta ChatGPT desde 11/2026.
+const CODEX_CHAT = 'gpt-5.6-luna'
 const CODEX_UA = 'codex_cli_rs/0.0.0 (DailyWork)'
 const NINEROUTER_PADRAO = 'http://127.0.0.1:20128'
 const { resolverChaveNoveRouter } = require('./lib-chave-9router.cjs')
@@ -176,12 +177,13 @@ function criarGeradorImagensCli({
       store: false,
       instructions: 'Fulfill the request by using the image_generation tool. Treat attached references as controlling. Generate only the requested output.',
       input: [{ type: 'message', role: 'user', content }],
-      tools: [{ type: 'image_generation', model: CODEX_MODELO_SESSAO, size, quality: 'high', output_format: 'png', background: 'opaque', partial_images: 1 }],
-      stream: false,
+      // O backend ChatGPT só aceita stream:true; partial_images fora pra o SSE trazer só a final.
+      tools: [{ type: 'image_generation', model: CODEX_MODELO_SESSAO, size, quality: 'high', output_format: 'png', background: 'opaque' }],
+      stream: true,
     }
     const resposta = await requisitar('https://chatgpt.com/backend-api/codex/responses', { method: 'POST', headers, body: JSON.stringify(payload) })
     if (!resposta.ok) throw erro('CODEX_GERACAO_FALHOU', `sessão Codex recusou a geração (HTTP ${resposta.status})`)
-    const bruto = JSON.stringify(resposta.json || {})
+    const bruto = resposta.json ? JSON.stringify(resposta.json) : String(resposta.texto || '')
     const match = bruto.match(/"result"\s*:\s*"(data:image\/[a-zA-Z]+;base64,)?([A-Za-z0-9+/=]{80,})"/)
       || bruto.match(/"b64_json"\s*:\s*"([A-Za-z0-9+/=]{80,})"/)
     const b64 = match ? (match[2] || match[1]) : null

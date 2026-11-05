@@ -52,19 +52,19 @@ test('Grok CLI chama Imagine Image 2.0 com qualidade medium', async () => {
   assert.equal(fs.existsSync(dest), true)
 })
 
-test('Codex prefere 9Router cx/gpt-5.5-image e cai na sessão se o roteador falhar', async () => {
+test('Codex prefere 9Router cx/gpt-image-2 e cai na sessão se o roteador falhar', async () => {
   const dest = path.join(TMP, 'codex.png')
   const via9r = criarGeradorImagensCli({
     nineRouterUrl: 'http://9r.test',
     fetchImpl: async (url, init) => {
       assert.match(String(url), /\/v1\/images\/generations/)
-      assert.equal(JSON.parse(init.body).model, 'cx/gpt-5.5-image')
+      assert.equal(JSON.parse(init.body).model, 'cx/gpt-image-2')
       return { ok: true, status: 200, text: async () => JSON.stringify({ data: [{ b64_json: PNG.toString('base64') }] }) }
     },
   })
   const ok = await via9r.gerar({ provedor: 'codex', prompt: 'capa editorial', dest })
   assert.equal(ok.via, '9router')
-  assert.equal(ok.modelo, 'cx/gpt-5.5-image')
+  assert.equal(ok.modelo, 'cx/gpt-image-2')
 
   const chamadas = []
   const fallback = criarGeradorImagensCli({
@@ -74,13 +74,13 @@ test('Codex prefere 9Router cx/gpt-5.5-image e cai na sessão se o roteador falh
       chamadas.push(String(url))
       if (String(url).includes('9r.test')) return { ok: false, status: 503, text: async () => '{"error":"down"}' }
       assert.match(String(url), /chatgpt.com\/backend-api\/codex\/responses/)
-      assert.equal(JSON.parse(init.body).tools[0].model, 'gpt-image-2.5-sunburst')
+      assert.equal(JSON.parse(init.body).tools[0].model, 'gpt-image-2.6-sunburst')
       return { ok: true, status: 200, text: async () => JSON.stringify({ b64_json: PNG.toString('base64') }) }
     },
   })
   const segunda = await fallback.gerar({ provedor: 'codex', prompt: 'capa editorial', dest: path.join(TMP, 'codex-2.png') })
   assert.equal(segunda.via, 'codex-cli')
-  assert.equal(segunda.modelo, 'gpt-image-2.5-sunburst')
+  assert.equal(segunda.modelo, 'gpt-image-2.6-sunburst')
   assert.equal(chamadas.some((url) => url.includes('9r.test')), true)
 })
 
